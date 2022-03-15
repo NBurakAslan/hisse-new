@@ -1,0 +1,196 @@
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+/>
+
+<div class="container-fluid">
+  <div class="form-inline">
+    <label class="my-1 mr-2">Display data for:</label>
+    <select class="custom-select my-1 mr-sm-2" id="select">
+      <option value="1">Now</option>
+    </select>
+    <button onclick="getVariants()" class="btn btn-primary my-1">Load</button>
+  </div>
+</div>
+
+<table class="table table-striped table-bordered table-hover" id="result">
+  <thead class="thead-light">
+    <tr>
+      <th>Product</th>
+      <th>SKU</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Created at</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  let records = [];
+  const baseURL = "https://www.singleprice.com";
+  const dbBaseURL = "https://gilaboo-fed4d.firebaseio.com";
+  const getPage = async (url) =>
+    new DOMParser().parseFromString(
+      await (await fetch(url)).text(),
+      "text/html"
+    );
+  const getJson = async (url) => JSON.parse(await (await fetch(url)).text());
+
+  const getVariants = async () => {
+    const date = document.getElementById("select").value;
+    const tableRef = document
+      .getElementById("result")
+      .getElementsByTagName("tbody")[0];
+
+    tableRef.innerHTML = "";
+    var newRow = tableRef.insertRow();
+    var newCell = newRow.insertCell(0);
+    newCell.colSpan = 5;
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.className = "text-center";
+    const innerDiv = document.createElement("div");
+    innerDiv.className = "spinner-grow";
+    wrapperDiv.appendChild(innerDiv);
+    newCell.appendChild(wrapperDiv);
+
+    let variants;
+    if (date == 1) variants = await fetchCurrent();
+    else variants = await getJson(dbBaseURL + `/products/${date}.json`);
+    tableRef.innerHTML = "";
+    renderProducts(variants);
+  };
+
+  const renderProducts = (variants) => {
+    const tableRef = document
+      .getElementById("result")
+      .getElementsByTagName("tbody")[0];
+    tableRef.innerHTML = "";
+
+    variants.forEach((variant) => {
+      var newRow = tableRef.insertRow();
+      var newCell = newRow.insertCell(0);
+      var newText = document.createTextNode(variant.name);
+      newCell.appendChild(newText);
+
+      var newCell1 = newRow.insertCell(1);
+      var newText1 = document.createTextNode(variant.sku);
+      newCell1.appendChild(newText1);
+
+      var newCell2 = newRow.insertCell(2);
+      var newText2 = document.createTextNode(variant.price.toFixed(2));
+      newCell2.appendChild(newText2);
+
+      var newCell3 = newRow.insertCell(3);
+      var newText3 = document.createTextNode(variant.stock);
+      newCell3.appendChild(newText3);
+
+      var newCell4 = newRow.insertCell(4);
+      var newText4 = document.createTextNode(
+        new Date(variant.created).toLocaleDateString("tr-TR")
+      );
+      newCell4.appendChild(newText4);
+    });
+
+    const totalInventory = variants.reduce((acc, i) => acc + i.stock, 0);
+    localStorage.setItem("stock", totalInventory.toString());
+
+    var newRow = tableRef.insertRow();
+    var newCell = newRow.insertCell(0);
+    var newText = document.createTextNode("Stock Change from last page view");
+    newCell.appendChild(newText);
+    var newCell1 = newRow.insertCell(1);
+    var newText1 = document.createTextNode(
+      totalInventory - parseInt(localStorage.getItem("stock") || totalInventory)
+    );
+    newCell1.appendChild(newText1);
+    var newCell2 = newRow.insertCell(2);
+    var newText2 = document.createTextNode("TOTAL");
+    newCell2.appendChild(newText2);
+    var newCell1 = newRow.insertCell(3);
+    var newText1 = document.createTextNode(totalInventory);
+    newCell1.appendChild(newText1);
+  };
+
+  const processProduct = async (productLink) => {
+    const productPage = await getPage(
+      baseURL + productLink.getAttribute("href")
+    );
+    return JSON.parse(
+      productPage.querySelector("script[data-product-json]").innerHTML
+    ).product;
+  };
+
+  const processPage = async (page, processes) => {
+    if (!isNaN(page)) {
+      const cataloguePage = await getPage(
+        baseURL + "/collections/kids?page=" + page
+      );
+      cataloguePage
+        .querySelectorAll("a.ProductItem__ImageWrapper")
+        .forEach((productLink) => processes.push(processProduct(productLink)));
+    }
+  };
+
+  const fetchCurrent = async () => {
+    const catalogue = await getPage(baseURL + "/collections/kids");
+    const pages = [];
+    const processes = [];
+
+    //catalogue.querySelector('div.Pagination__Nav').querySelectorAll('.Pagination__NavItem')
+    [0, 1, 2, 3, 4, 5, 6, 7].forEach((i) =>
+      pages.push(processPage(i, processes))
+    );
+
+    await Promise.all(pages);
+    const products = await Promise.all(processes);
+    const variants = [];
+
+    products.forEach((product) => {
+      product.variants.forEach((variant) => {
+        variants.push({
+          name: variant.name,
+          sku: variant.sku,
+          price: variant.price / 100,
+          stock: variant.inventory_quantity,
+          created: product.created_at,
+        });
+      });
+    });
+
+    variants.sort((a, b) => (a.sku > b.sku ? 1 : -1));
+
+    if (
+      true ||
+      (records.length && Math.max(...records) < Date.now() - 2600000)
+    ) {
+      fetch(dbBaseURL + "/products.json", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [Date.now().toString()]: variants }),
+      });
+    }
+
+    return variants;
+  };
+
+  const main = async () => {
+    const select = document.getElementById("select");
+    records = Object.keys(
+      await getJson(dbBaseURL + "/products.json?shallow=true")
+    );
+    records
+      .sort((a, b) => (a < b ? 1 : -1))
+      .forEach((date) => {
+        var option = document.createElement("option");
+        option.text =
+          new Date(+date).toLocaleDateString() +
+          " - " +
+          new Date(+date).toLocaleTimeString();
+        option.value = date;
+        select.add(option);
+      });
+  };
+
+  main();
+</script>
