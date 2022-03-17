@@ -67,18 +67,19 @@ class HisseMain extends Component {
   };
 
   goToHisse = (name) => {
-    this.props.findHisse(this.props.firebase.find((his) => his.name === name));
+    // this.props.findHisse(this.props.firebase.find((his) => his.name === name));
 
     this.props.history({ pathname: `/hisse/${name}` });
   };
 
-  handleBrowserSave=()=>{this.props.syncLocalStorage()}
+  handleBrowserSave = () => {
+    this.props.syncLocalStorage();
+  };
 
   render() {
     const { firebase } = this.props;
-    
 
-    //Özet için değişkenler 
+    //Özet için değişkenler
     let toplamOdeme = 0;
     let toplamVarlik = 0;
     let topKarZarar = 0;
@@ -95,7 +96,7 @@ class HisseMain extends Component {
         0
       );
       const ortalama = miktar === 0 ? 0 : (tutar / miktar).toFixed(2);
-      const borsa = this.props.borsa.find(his=>his.strKod===hisse.name);
+      const borsa = this.props.borsa.find((his) => his.strKod === hisse.name);
       let karZarar = 0;
       let eder = 0;
       if (borsa) {
@@ -107,12 +108,20 @@ class HisseMain extends Component {
       toplamOdeme += tutar;
       toplamVarlik += eder;
       topKarZarar += karZarar;
-      
-      const dataString=`Hisse Adı:${hisse.name}- Miktar:${miktar}- Tutar:${tutar.toFixed(0)}-Ortalama:${ortalama}- Kar/Zarar:${karZarar.toFixed(0)}`
+
+      const dataString = `Hisse Adı:${
+        hisse.name
+      }- Miktar:${miktar}- Tutar:${tutar.toFixed(
+        0
+      )}-Ortalama:${ortalama}- Kar/Zarar:${karZarar.toFixed(0)}`;
 
       return (
-        <li className={"HisseMiniCard"} onClick={() => this.goToHisse(hisse.name)} key={hisse.name} >
-         {dataString}
+        <li
+          className={"HisseMiniCard"}
+          onClick={() => this.goToHisse(hisse.name)}
+          key={hisse.name}
+        >
+          {dataString}
         </li>
       );
     });
@@ -131,7 +140,12 @@ class HisseMain extends Component {
           <div>Toplam Ödeme: {toplamOdeme.toFixed(0)}</div>
           <div>Toplam Varlık: {toplamVarlik.toFixed(0)}</div>
           <div>Toplam Kar/Zarar: {topKarZarar.toFixed(0)}</div>
-          <div>Kar/Zarar Oran: {((topKarZarar.toFixed(0)/toplamOdeme.toFixed(0))*100).toFixed(2)}</div>
+          <div>
+            Kar/Zarar Oran:{" "}
+            {((topKarZarar.toFixed(0) / toplamOdeme.toFixed(0)) * 100).toFixed(
+              2
+            )}
+          </div>
         </div>
         {this.props.formShow && (
           <YeniHisse

@@ -1,9 +1,17 @@
 import React, { Component } from "react";
 import Sablon from "./Sablon";
-
+import { withRouter } from "./WithRouter";
 class HisseCard extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  get data() {
+    console.log(this.props.params);
+    return this.props.findCardHisse(this.props.params.id);
+  }
   render() {
-    const { isData, sekerData, borsaData, mainHisse } = this.props.cardData;
+    const { isData, sekerData, borsaData, mainHisse } = this.data;
 
     return (
       <Sablon>
@@ -24,4 +32,4 @@ class HisseCard extends Component {
   }
 }
 
-export default HisseCard;
+export default withRouter(HisseCard);

@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import OneriList from "./OneriList";
 import "./App.css";
 import HisseMain from "./HisseMain";
-import { ISBNKURL, BORSA, FIREBASE } from "./Config";
+import { FIREBASE } from "./Config";
 import axios from "axios";
 import HisseCard from "./HisseCard";
 import { withRouter } from "./WithRouter";
@@ -18,6 +18,8 @@ import {
   get,
 } from "firebase/database";
 import hisselerim from "./srcHisse";
+
+import data from "./data.js";
 
 class App extends Component {
   constructor(props) {
@@ -34,33 +36,31 @@ class App extends Component {
   }
   async componentDidMount() {
     //firebase Data
-    const firebase = await this.getFirebase(FIREBASE, "/burak/");
+    // const firebase = await this.getFirebase(FIREBASE, "/burak/");
+    // //sekerbank hisse yorumları api yok site html ini parse ediyorum
+    // const sekerHisseler = await this.getFirebase(FIREBASE, "/Seker/");
 
-    const dataBase = await axios
-      .get("https://nameless-badlands-21842.herokuapp.com/")
-      .then((data) => data.data);
-    console.log(dataBase);
+    // const dataBase = await axios
+    //   .get("https://nameless-badlands-21842.herokuapp.com/")
+    //   .then((data) => data.data);
+    // console.log(dataBase);
+    // const borsa = dataBase.borsa.flat();
+    // const isHisseler = dataBase.isHisseler;
+    // console.log(borsa);
 
-    const borsa = dataBase.borsa.flat();
-    const isHisseler = dataBase.isHisseler;
-    console.log(borsa);
-
-    // const borsa = await axios.get(`${BORSA}.json`).then((data) => data.data);
-
-    // //is Hisseler data
-    // const sektor = ["00", "0001", "0040", "0015", "0019"];
-    // const isHisseler = (await Promise.all(
-    //   sektor.map(async (sek) => {
-    //     const data = await axios.get(`${ISBNKURL}${sek}&takip=Yes&yil=1`);
-
-    //     return data.data.value;
-    //   })
-    // )).flat();
-
-    // hisse.data.value.forEach((val) => val.ACIKLAMA_TR.replace(/"/g, ""));
-
-    //sekerbank hisse yorumları api yok site html ini parse ediyorum
-    const sekerHisseler = await this.getFirebase(FIREBASE, "/Seker/");
+    const borsa = data.borsa.flat();
+    const isHisseler = data.isHisseler;
+    const sekerHisseler = data.sekerHisseler;
+    const firebase = data.firebase;
+    const cardData = firebase.map((his) => {
+      const data = {
+        isData: isHisseler.find((val) => val.Title === his.name),
+        sekerData: sekerHisseler.find((val) => val[0] === his.name),
+        borsaData: borsa.find((val) => val.strKod === his.name),
+        mainHisse: his,
+      };
+      return data;
+    });
 
     this.setState({
       tumHisse: isHisseler.map((val) => val.Title),
@@ -68,6 +68,7 @@ class App extends Component {
       sekerHisseler,
       borsa,
       firebase: firebase || hisselerim,
+      cardData,
     });
   }
 
@@ -97,7 +98,9 @@ class App extends Component {
       sekerData: this.state.sekerHisseler.find(
         (val) => val[0] === mainHisseObj.name
       ),
-      borsaData: this.state.borsa.find(his=>his.strKod===mainHisseObj.name),
+      borsaData: this.state.borsa.find(
+        (his) => his.strKod === mainHisseObj.name
+      ),
       mainHisse: mainHisseObj,
     };
 
@@ -180,12 +183,17 @@ class App extends Component {
 
   //hisse sil
 
+  findCardHisse = (name) => {
+    console.log(name, "findcardhisse");
+    return this.state.cardData.find((his) => his.borsaData.strKod === name);
+  };
 
-   syncLocalStorage = () => {
+  syncLocalStorage = () => {
     window.localStorage.setItem("burakData", JSON.stringify(this.state));
   };
- 
+
   render() {
+    console.log(this.state.cardData);
     return (
       <Routes>
         <Route
@@ -203,7 +211,7 @@ class App extends Component {
         <Route path="/oneri" element={<OneriList {...this.state} />} />
         <Route
           path="/hisse/:id"
-          element={<HisseCard cardData={this.state.cardData} />}
+          element={<HisseCard findCardHisse={this.findCardHisse} />}
         />
       </Routes>
     );
@@ -211,3 +219,17 @@ class App extends Component {
 }
 
 export default withRouter(App);
+
+// const borsa = await axios.get(`${BORSA}.json`).then((data) => data.data);
+
+// //is Hisseler data
+// const sektor = ["00", "0001", "0040", "0015", "0019"];
+// const isHisseler = (await Promise.all(
+//   sektor.map(async (sek) => {
+//     const data = await axios.get(`${ISBNKURL}${sek}&takip=Yes&yil=1`);
+
+//     return data.data.value;
+//   })
+// )).flat();
+
+// hisse.data.value.forEach((val) => val.ACIKLAMA_TR.replace(/"/g, ""));
