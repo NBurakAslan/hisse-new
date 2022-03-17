@@ -14,11 +14,11 @@ class YeniHisse extends Component {
     this.state = {
       stage: "form",
       name: "",
-      buy: 0.0,
-      sell: 0.0,
-      price: 0.0,
-      total: 0.0,
-      comision: 0.0,
+      buy: 0,
+      sell: 0,
+      price: 0,
+      total: 0,
+      comision: 0,
       date: 0,
     };
   }
@@ -29,7 +29,7 @@ class YeniHisse extends Component {
       (value) => value.length > 3 && value.length < 6
     );
     ValidatorForm.addValidationRule("number", (value) =>
-      value === "." ? true : typeof value === "number"
+       typeof value === "number"
     );
     ValidatorForm.addValidationRule(
       "string",
@@ -45,9 +45,9 @@ class YeniHisse extends Component {
     });
   };
   handleChange = (e) => {
-    this.setState({
-      [e.target.name]: +e.target.value,
-    });
+        this.setState({
+          [e.target.name]:+e.target.value,
+        })
   };
 
   handleChangeDate = (value) => {
@@ -61,11 +61,11 @@ class YeniHisse extends Component {
       name: newHisse.name,
       order: [
         {
-          buy: newHisse.buy,
-          sell: newHisse.sell,
-          price: newHisse.price,
-          total: newHisse.total,
-          comision: newHisse.comision,
+          buy: +newHisse.buy,
+          sell: +newHisse.sell,
+          price: +newHisse.price,
+          total: +newHisse.total,
+          comision: +newHisse.comision,
           date: newHisse.date,
         },
       ],
@@ -106,6 +106,7 @@ class YeniHisse extends Component {
               <TextValidator
                 label="Hisse Miktarı Alış"
                 value={this.state.buy}
+                type="number"
                 name="buy"
                 onChange={this.handleChange}
                 fullWidth
@@ -122,10 +123,11 @@ class YeniHisse extends Component {
                 label="Hisse Miktarı Satış"
                 value={this.state.sell}
                 name="sell"
+                type="number"
                 onChange={this.handleChange}
                 fullWidth
                 margin="normal"
-                validators={["required", "number", "alis"]}
+                validators={["required", "number", "satis"]}
                 errorMessages={[
                   "Hisse adedi girin",
                   "Sayı girilmesi lazım",
@@ -136,6 +138,7 @@ class YeniHisse extends Component {
                 label="Hisse fiyatı"
                 value={this.state.price}
                 name="price"
+                type="number"
                 onChange={this.handleChange}
                 fullWidth
                 margin="normal"
@@ -146,6 +149,7 @@ class YeniHisse extends Component {
                 label="Hisse Tutar "
                 value={this.state.total}
                 name="total"
+                type="number"
                 onChange={this.handleChange}
                 fullWidth
                 margin="normal"
@@ -156,6 +160,7 @@ class YeniHisse extends Component {
                 label="Hisse Komisyon "
                 value={this.state.comision}
                 name="comision"
+                type="number"
                 onChange={this.handleChange}
                 fullWidth
                 margin="normal"
