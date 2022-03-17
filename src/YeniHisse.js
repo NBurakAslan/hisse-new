@@ -28,9 +28,8 @@ class YeniHisse extends Component {
       "letter",
       (value) => value.length > 3 && value.length < 6
     );
-    ValidatorForm.addValidationRule(
-      "number",
-      (value) => typeof value === "number"
+    ValidatorForm.addValidationRule("number", (value) =>
+      value === "." ? true : typeof value === "number"
     );
     ValidatorForm.addValidationRule(
       "string",
