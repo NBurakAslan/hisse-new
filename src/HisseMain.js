@@ -4,6 +4,7 @@ import Sablon from "./Sablon";
 import YeniHisse from "./YeniHisse";
 import { withRouter } from "./WithRouter";
 import "./HisseMiniCard.css";
+import { tufe, ufe } from "./srcHisse";
 class HisseMain extends Component {
   copyfirebase = (arr) => {
     const newfirebase = arr.map((hisse) => {
@@ -14,53 +15,6 @@ class HisseMain extends Component {
     });
     return newfirebase;
   };
-
-  // saveHisse = (newHisse) => {
-  //   const newHisseObj = {
-  //     name: newHisse.name,
-  //     order: [
-  //       {
-  //         buy: newHisse.buy,
-  //         sell: newHisse.sell,
-  //         price: newHisse.price,
-  //         total: newHisse.total,
-  //         comision: newHisse.comision,
-  //         date: newHisse.date,
-  //       },
-  //     ],
-  //   };
-
-  //   if (this.state.firebase.some((his) => his.name === newHisseObj.name)) {
-  //     //eğer hisse daha önce aldığım bir hisse ise
-
-  //     const degismeyenfirebase = this.state.firebase.filter(
-  //       (hisse) => hisse.name !== newHisseObj.name
-  //     );
-  //     const yeniHisse = this.state.firebase.find(
-  //       (his) => his.name === newHisseObj.name
-  //     );
-  //     console.log(degismeyenfirebase, yeniHisse);
-  //     yeniHisse.order = [...yeniHisse.order, newHisseObj.order[0]];
-
-  //     this.setState(
-  //       { firebase: [...degismeyenfirebase, yeniHisse], formShow: false }
-  //       // this.syncLocalStorage
-  //     );
-  //   } else {
-  //     //eğer hisse ilk defa aldığım bir hisse ise
-  //     this.setState(
-  //       {
-  //         firebase: [...this.copyfirebase(this.state.firebase), newHisseObj],
-  //         formShow: false,
-  //       }
-  //       // this.syncLocalStorage
-  //     );
-  //   }
-  // };
-  //browser datasına kopyala
-  // syncLocalStorage = () => {
-  //   window.localStorage.setItem("hisse", JSON.stringify(this.state.firebase));
-  // };
 
   toogleFormHandle = () => {
     this.props.toogleForm();
@@ -76,6 +30,16 @@ class HisseMain extends Component {
     this.props.syncLocalStorage();
   };
 
+  tufeHesap = (epoch) => {
+    const date = new Date(
+      epoch.toString().length === 10 ? epoch * 1000 : epoch
+    );
+    const tufeYıl = date.getUTCFullYear();
+    const tufeAy = date.getUTCMonth() + 1;
+
+    return (tufe[tufeYıl][tufeAy] + 100) / 100;
+  };
+
   render() {
     const { firebase } = this.props;
 
@@ -83,32 +47,46 @@ class HisseMain extends Component {
     let toplamOdeme = 0;
     let toplamVarlik = 0;
     let topKarZarar = 0;
-
+    let toplamTufeOdeme = 0;
+    let tufeTopKarZarar = 0;
     const hisseDetay = firebase.map((hisse) => {
       const miktar = hisse.order.reduce(
         (miktar, adet) => miktar + adet.buy - adet.sell,
         0
       );
 
-      const tutar = hisse.order.reduce(
-        (toplam, emir) =>
-          toplam + (emir.buy === 0 ? -emir.total : emir.total) + emir.comision,
-        0
-      );
+      const tufeTutar = hisse.order.reduce((toplam, emir) => {
+        const tufeAy = this.tufeHesap(emir.date);
+
+        return (
+          toplam +
+          (emir.buy === 0 ? -emir.total * tufeAy : emir.total * tufeAy) +
+          emir.comision * tufeAy
+        );
+      }, 0);
+
+      const tutar = hisse.order.reduce((toplam, emir) => {
+        return (
+          toplam + (emir.buy === 0 ? -emir.total : emir.total) + emir.comision
+        );
+      }, 0);
+
       const ortalama = miktar === 0 ? 0 : (tutar / miktar).toFixed(2);
       const borsa = this.props.borsa.find((his) => his.strKod === hisse.name);
       let karZarar = 0;
       let eder = 0;
+      let tufeKarZarar = 0;
       if (borsa) {
         eder = miktar * borsa.dblSon;
-
         karZarar = miktar === 0 ? 0 - tutar : eder - tutar;
+        tufeKarZarar = miktar === 0 ? 0 - tufeTutar : eder - tufeTutar;
       }
 
       toplamOdeme += tutar;
+      toplamTufeOdeme += tufeTutar;
       toplamVarlik += eder;
       topKarZarar += karZarar;
-
+      tufeTopKarZarar += tufeKarZarar;
       const dataString = `Hisse Adı:${
         hisse.name
       }- Miktar:${miktar}- Tutar:${tutar.toFixed(
@@ -138,13 +116,22 @@ class HisseMain extends Component {
         <div>
           <h2>Özet</h2>
           <div>Toplam Ödeme: {toplamOdeme.toFixed(0)}</div>
+          <div>TUFE Toplam Ödeme: {toplamTufeOdeme.toFixed(0)}</div>
           <div>Toplam Varlık: {toplamVarlik.toFixed(0)}</div>
           <div>Toplam Kar/Zarar: {topKarZarar.toFixed(0)}</div>
+          <div>TUFE Toplam Kar/Zarar: {tufeTopKarZarar.toFixed(0)}</div>
           <div>
-            Kar/Zarar Oran:{" "}
+            Kar/Zarar Oran:
             {((topKarZarar.toFixed(0) / toplamOdeme.toFixed(0)) * 100).toFixed(
               2
             )}
+          </div>
+          <div>
+            TUFE Kar/Zarar Oran:
+            {(
+              (tufeTopKarZarar.toFixed(0) / toplamOdeme.toFixed(0)) *
+              100
+            ).toFixed(2)}
           </div>
         </div>
         {this.props.formShow && (
@@ -159,3 +146,50 @@ class HisseMain extends Component {
 }
 
 export default withRouter(HisseMain);
+
+// saveHisse = (newHisse) => {
+//   const newHisseObj = {
+//     name: newHisse.name,
+//     order: [
+//       {
+//         buy: newHisse.buy,
+//         sell: newHisse.sell,
+//         price: newHisse.price,
+//         total: newHisse.total,
+//         comision: newHisse.comision,
+//         date: newHisse.date,
+//       },
+//     ],
+//   };
+
+//   if (this.state.firebase.some((his) => his.name === newHisseObj.name)) {
+//     //eğer hisse daha önce aldığım bir hisse ise
+
+//     const degismeyenfirebase = this.state.firebase.filter(
+//       (hisse) => hisse.name !== newHisseObj.name
+//     );
+//     const yeniHisse = this.state.firebase.find(
+//       (his) => his.name === newHisseObj.name
+//     );
+//     console.log(degismeyenfirebase, yeniHisse);
+//     yeniHisse.order = [...yeniHisse.order, newHisseObj.order[0]];
+
+//     this.setState(
+//       { firebase: [...degismeyenfirebase, yeniHisse], formShow: false }
+//       // this.syncLocalStorage
+//     );
+//   } else {
+//     //eğer hisse ilk defa aldığım bir hisse ise
+//     this.setState(
+//       {
+//         firebase: [...this.copyfirebase(this.state.firebase), newHisseObj],
+//         formShow: false,
+//       }
+//       // this.syncLocalStorage
+//     );
+//   }
+// };
+//browser datasına kopyala
+// syncLocalStorage = () => {
+//   window.localStorage.setItem("hisse", JSON.stringify(this.state.firebase));
+// };

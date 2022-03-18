@@ -1,4 +1,4 @@
-const hisselerim = [
+export const hisselerim = [
   {
     name: "SISE",
     order: [
@@ -356,4 +356,12 @@ const hisselerim = [
   },
 ];
 
-export default hisselerim;
+export const tufe = {
+  2022: { 1: 11.1, 2: 4.81, 3: 1 },
+  2021: { 12: 13.58, 11: 3.51 },
+};
+
+export const ufe = {
+  2022: { 1: 10.45, 2: 7.22, 3: 1 },
+  2021: { 12: 19.08, 11: 9.99 },
+};
