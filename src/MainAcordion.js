@@ -10,7 +10,7 @@ import SekerAcordian from "./SekerAcordian";
 function MainAcordion(props) {
   const [expanded, setExpanded] = useState(false);
 
-  const handleChange = (panel) => (event, isExpanded) => {
+  const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
@@ -22,16 +22,15 @@ function MainAcordion(props) {
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
+          aria-controls='panel1bh-content'
+          id='panel1bh-header'
         >
-          <button>
-            <i class="fas fa-trash" />
-          </button>
           <Typography sx={{ width: "33%", flexShrink: 0 }}>
             Hisse Adı
           </Typography>
-          <Typography sx={{ color: "text.secondary" }}>{props.id}</Typography>
+          <Typography sx={{ color: "text.secondary" }}>
+            {props.id}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <IsAcordian hisse={props.isHisse} />

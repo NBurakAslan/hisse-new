@@ -9,7 +9,7 @@ import Aciklama from "./Aciklama";
 function IsAcordian(props) {
   const [expanded, setExpanded] = useState(false);
 
-  const handleChange = (panel) => (event, isExpanded) => {
+  const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
@@ -33,8 +33,8 @@ function IsAcordian(props) {
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
+          aria-controls='panel1bh-content'
+          id='panel1bh-header'
         >
           <Typography sx={{ width: "33%", flexShrink: 0 }}>
             İş Yatırım
@@ -42,12 +42,11 @@ function IsAcordian(props) {
           <Typography
             sx={{ color: "text.secondary" }}
           >{`${Title}        Öneri:${ONERI_ACIKLAMA}`}</Typography>
-          <Typography
-            sx={{ color: "text.secondary" }}
-          >{`    Hedef Fiyat:${Son_Hedef_Fiyat_Target_Price}`}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>{`F/K:${Number(F_K).toFixed(2)} `}</Typography>
+          <Typography>{`F/K:${Number(F_K).toFixed(
+            2
+          )} `}</Typography>
           <Typography>{`Hedef Fiyat ${Son_Hedef_Fiyat_Target_Price}`}</Typography>
           <Aciklama aciklama={ACIKLAMA_TR} />
         </AccordionDetails>
