@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Sablon from "./Sablon";
 import { withRouter } from "./WithRouter";
+import {tufeHesap} from "./helper.js"
 class HisseCard extends Component {
   get data() {
     return this.props.findCardHisse(this.props.params.id);
@@ -16,6 +17,15 @@ class HisseCard extends Component {
         toplam + (emir.buy === 0 ? -emir.total : emir.total) + emir.comision,
       0
     );
+    const tutarTufe = mainHisse.order.reduce((toplam, emir) => {
+      const tufeAy = this.tufeHesap(emir.date);
+
+      return (
+        toplam +
+        (emir.buy === 0 ? -emir.total * tufeAy : emir.total * tufeAy) +
+        emir.comision * tufeAy
+      );
+    }, 0);
 
     return (
       <Sablon>

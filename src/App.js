@@ -36,22 +36,22 @@ class App extends Component {
   }
   async componentDidMount() {
     //firebase Data
-    // const firebase = await this.getFirebase(FIREBASE, "/burak/");
-    // //sekerbank hisse yorumları api yok site html ini parse ediyorum
-    // const sekerHisseler = await this.getFirebase(FIREBASE, "/Seker/");
+    const firebase = await this.getFirebase(FIREBASE, "/burak/");
+    //sekerbank hisse yorumları api yok site html ini parse ediyorum
+    const sekerHisseler = await this.getFirebase(FIREBASE, "/Seker/");
 
-    // const dataBase = await axios
-    //   .get("https://nameless-badlands-21842.herokuapp.com/")
-    //   .then((data) => data.data);
-    // console.log(dataBase);
-    // const borsa = dataBase.borsa.flat();
-    // const isHisseler = dataBase.isHisseler;
-    // console.log(borsa);
+    const dataBase = await axios
+      .get("https://nameless-badlands-21842.herokuapp.com/")
+      .then((data) => data.data);
+   
+    const borsa = dataBase.borsa.flat();
+    const isHisseler = dataBase.isHisseler;
+    
 
-    const borsa = data.borsa.flat();
-    const isHisseler = data.isHisseler;
-    const sekerHisseler = data.sekerHisseler;
-    const firebase = data.firebase;
+    // const borsa = data.borsa.flat();
+    // const isHisseler = data.isHisseler;
+    // const sekerHisseler = data.sekerHisseler;
+    // const firebase = data.firebase;
     const cardData = firebase.map((his) => {
       const data = {
         isData: isHisseler.find((val) => val.Title === his.name),
@@ -184,7 +184,7 @@ class App extends Component {
   //hisse sil
 
   findCardHisse = (name) => {
-    console.log(name, "findcardhisse");
+   
     return this.state.cardData.find((his) => his.borsaData.strKod === name);
   };
 
@@ -193,7 +193,7 @@ class App extends Component {
   };
 
   render() {
-    console.log(this.state.cardData);
+   
     return (
       <Routes>
         <Route

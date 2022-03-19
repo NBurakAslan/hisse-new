@@ -4,7 +4,7 @@ import Sablon from "./Sablon";
 import YeniHisse from "./YeniHisse";
 import { withRouter } from "./WithRouter";
 import "./HisseMiniCard.css";
-import { tufe, ufe } from "./srcHisse";
+import {tufeHesap} from "./helper.js"
 class HisseMain extends Component {
   copyfirebase = (arr) => {
     const newfirebase = arr.map((hisse) => {
@@ -30,15 +30,7 @@ class HisseMain extends Component {
     this.props.syncLocalStorage();
   };
 
-  tufeHesap = (epoch) => {
-    const date = new Date(
-      epoch.toString().length === 10 ? epoch * 1000 : epoch
-    );
-    const tufeYıl = date.getUTCFullYear();
-    const tufeAy = date.getUTCMonth() + 1;
-
-    return (tufe[tufeYıl][tufeAy] + 100) / 100;
-  };
+  
 
   render() {
     const { firebase } = this.props;
@@ -56,7 +48,7 @@ class HisseMain extends Component {
       );
 
       const tufeTutar = hisse.order.reduce((toplam, emir) => {
-        const tufeAy = this.tufeHesap(emir.date);
+        const tufeAy = tufeHesap(emir.date,"ufe");
 
         return (
           toplam +
