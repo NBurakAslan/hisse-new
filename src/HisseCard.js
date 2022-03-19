@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import Sablon from "./Sablon";
 import { withRouter } from "./WithRouter";
-import {tufeHesap} from "./helper.js"
+import { tufeHesap } from "./helper.js";
+import { tufe, ufe } from "./srcHisse";
 class HisseCard extends Component {
   get data() {
     return this.props.findCardHisse(this.props.params.id);
@@ -18,7 +19,7 @@ class HisseCard extends Component {
       0
     );
     const tutarTufe = mainHisse.order.reduce((toplam, emir) => {
-      const tufeAy = this.tufeHesap(emir.date);
+      const tufeAy = tufeHesap(emir.date, tufe);
 
       return (
         toplam +
@@ -33,6 +34,7 @@ class HisseCard extends Component {
         <div>Sektör:{isData.AS_ALT_SEKTOR_TANIMI}</div>
         <div>Elimdeki Adet:{miktar}</div>
         <div>Ödenen Para:{tutar}</div>
+        <div>TUFE ye göre Ödenen Para:{tutarTufe}</div>
         <div>Son Fiyat:{borsaData.dblSon}</div>
         <div>F/K:{isData.CARI_FK}</div>
         <div>PD/DD:{isData.CARI_PD_DD}</div>

@@ -4,7 +4,8 @@ import Sablon from "./Sablon";
 import YeniHisse from "./YeniHisse";
 import { withRouter } from "./WithRouter";
 import "./HisseMiniCard.css";
-import {tufeHesap} from "./helper.js"
+import { tufeHesap } from "./helper.js";
+import { tufe, ufe } from "./srcHisse";
 class HisseMain extends Component {
   copyfirebase = (arr) => {
     const newfirebase = arr.map((hisse) => {
@@ -30,8 +31,6 @@ class HisseMain extends Component {
     this.props.syncLocalStorage();
   };
 
-  
-
   render() {
     const { firebase } = this.props;
 
@@ -48,7 +47,7 @@ class HisseMain extends Component {
       );
 
       const tufeTutar = hisse.order.reduce((toplam, emir) => {
-        const tufeAy = tufeHesap(emir.date,"ufe");
+        const tufeAy = tufeHesap(emir.date, tufe);
 
         return (
           toplam +
