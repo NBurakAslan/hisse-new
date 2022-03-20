@@ -33,7 +33,12 @@ function MainAcordion(props) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <IsAcordian hisse={props.isHisse} />
+          {props.isHisse ? (
+            <IsAcordian hisse={props.isHisse} />
+          ) : (
+            "İşBank Yatırım Öneri yok"
+          )}
+
           {props.sekerHisse ? (
             <SekerAcordian hisse={props.sekerHisse} />
           ) : (

@@ -100,22 +100,6 @@ class App extends Component {
   // getFirebase = async () => (await fetch(`${FIREBASE}/burak/`)).text();
   // getpage, tableToJson ve stripHtml ile html deki tabloyu parse ediyorum
 
-  findHisse = mainHisseObj => {
-    const cardHisseData = {
-      isData: this.state.isHisseler.find(
-        val => val.Title === mainHisseObj.name
-      ),
-      sekerData: this.state.sekerHisseler.find(
-        val => val[0] === mainHisseObj.name
-      ),
-      borsaData: this.state.borsa.find(
-        his => his.strKod === mainHisseObj.name
-      ),
-      mainHisse: mainHisseObj,
-    };
-
-    this.setState({ cardData: cardHisseData });
-  };
   //yardımcı fonksiyon
   copyhisseler = arr => {
     const newhisseler = arr.map(hisse => {
@@ -263,3 +247,20 @@ export default withRouter(App);
 // )).flat();
 
 // hisse.data.value.forEach((val) => val.ACIKLAMA_TR.replace(/"/g, ""));
+
+// findHisse = mainHisseObj => {
+//   const cardHisseData = {
+//     isData: this.state.isHisseler.find(
+//       val => val.Title === mainHisseObj.name
+//     ),
+//     sekerData: this.state.sekerHisseler.find(
+//       val => val[0] === mainHisseObj.name
+//     ),
+//     borsaData: this.state.borsa.find(
+//       his => his.strKod === mainHisseObj.name
+//     ),
+//     mainHisse: mainHisseObj,
+//   };
+
+//   this.setState({ cardData: cardHisseData });
+// };

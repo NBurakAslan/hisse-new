@@ -31,3 +31,15 @@ export const tarihceStr = (
     buy > 0 ? buy : sell
   } Tutar: ${total} Birim Fiyat: ${price} Komisyon:${comision} `;
 };
+
+export const overallCalcu = (
+  miktar,
+  price,
+  total = 0,
+  oran = false
+) =>
+  oran
+    ? `${(((miktar * price - total) / total) * 100).toFixed(
+        2
+      )}%`
+    : Number((miktar * price - total).toFixed(2));

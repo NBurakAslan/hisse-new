@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import Sablon from "./Sablon";
 import { withRouter } from "./WithRouter";
-import { tufeHesap, tarihceStr } from "./helper.js";
+import {
+  tufeHesap,
+  tarihceStr,
+  overallCalcu,
+} from "./helper.js";
 import { tufe, ufe } from "./srcHisse";
 import MainAcordion from "./MainAcordion";
 
@@ -13,10 +17,10 @@ class HisseCard extends Component {
   render() {
     if (this.data) {
       const {
-        isData,
-        sekerData,
-        borsaData,
-        mainHisse,
+        isData = "",
+        sekerData = "",
+        borsaData = "",
+        mainHisse = "",
       } = this.data;
       const miktar = mainHisse.order.reduce(
         (miktar, adet) => miktar + adet.buy - adet.sell,
@@ -61,12 +65,27 @@ class HisseCard extends Component {
         <Sablon>
           <h1>Hisse Adı:{mainHisse.name}</h1>
           <div>Sektör:{isData.AS_ALT_SEKTOR_TANIMI}</div>
+          <div>Son Birim Fiyat:{borsaData.dblSon}</div>
+          <div>
+            Ortalamam:
+            {miktar === 0 ? 0 : (tutar / miktar).toFixed(2)}
+          </div>
+          <div>
+            Tufeye Göre Ortalamam:
+            {miktar === 0
+              ? 0
+              : (tutarTufe / miktar).toFixed(2)}
+          </div>
           <div>Elimdeki Adet:{miktar.toFixed(2)}</div>
+          <div>
+            Şu Anki Ederi:
+            {overallCalcu(miktar, borsaData.dblSon)}
+          </div>
           <div>Ödenen Para:{tutar.toFixed(2)}</div>
           <div>
             TUFE ye göre Ödenen Para:{tutarTufe.toFixed(2)}
           </div>
-          <div>Son Fiyat:{borsaData.dblSon}</div>
+
           <div>F/K:{isData.CARI_FK}</div>
           <div>PD/DD:{isData.CARI_PD_DD}</div>
           <div>FD/FAVÖK:{isData.FD_FAVOK}</div>
@@ -75,9 +94,38 @@ class HisseCard extends Component {
           </div>
           <div>
             Kar/Zarar:
-            {(miktar * borsaData.dblSon - tutar).toFixed(2)}
+            {overallCalcu(miktar, borsaData.dblSon, tutar)}
           </div>
-          <div>Yabancı Oranı:{isData.YABANCI_ORAN}</div>
+          <div>
+            Kar/Zarar Oran:
+            {overallCalcu(
+              miktar,
+              borsaData.dblSon,
+              tutar,
+              true
+            )}
+          </div>
+          <div>
+            TUFE Kar/Zarar:
+            {overallCalcu(
+              miktar,
+              borsaData.dblSon,
+              tutarTufe
+            )}
+          </div>
+          <div>
+            TUFE Kar/Zarar Oran:
+            {overallCalcu(
+              miktar,
+              borsaData.dblSon,
+              tutarTufe,
+              true
+            )}
+          </div>
+          <div>
+            Yabancı Oranı:
+            {Number(isData.YABANCI_ORAN).toFixed(2)}
+          </div>
           <div>
             <h3>Analiz ve Öneri</h3>
             <div>
