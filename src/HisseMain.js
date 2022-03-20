@@ -32,7 +32,7 @@ class HisseMain extends Component {
   };
 
   render() {
-    const { firebase } = this.props;
+    const { firebase, temettu } = this.props;
 
     //Özet için değişkenler
     let toplamOdeme = 0;
@@ -40,11 +40,22 @@ class HisseMain extends Component {
     let topKarZarar = 0;
     let toplamTufeOdeme = 0;
     let tufeTopKarZarar = 0;
+    let topTemettu = 0;
     const hisseDetay = firebase.map(hisse => {
       const miktar = hisse.order.reduce(
         (miktar, adet) => miktar + adet.buy - adet.sell,
         0
       );
+
+      const hisTemettuData = temettu.find(
+        his => his.co === hisse.name
+      );
+
+      const hisseTemettuTutar = hisTemettuData
+        ? miktar * hisTemettuData.dhtl
+        : 0;
+
+      console.log(hisTemettuData, hisseTemettuTutar);
 
       const tufeTutar = hisse.order.reduce(
         (toplam, emir) => {
@@ -96,6 +107,7 @@ class HisseMain extends Component {
       toplamVarlik += eder;
       topKarZarar += karZarar;
       tufeTopKarZarar += tufeKarZarar;
+      topTemettu += hisseTemettuTutar;
       const dataString = `Hisse Adı:${
         hisse.name
       }- Miktar:${miktar}- Tutar:${tutar.toFixed(
@@ -112,6 +124,7 @@ class HisseMain extends Component {
         </li>
       );
     });
+
     return (
       <Sablon>
         <Navbar />
@@ -135,11 +148,12 @@ class HisseMain extends Component {
           <div>
             Toplam Varlık: {toplamVarlik.toFixed(0)}
           </div>
+          <div>Toplam Temettü: {topTemettu.toFixed(0)}</div>
           <div>
             Toplam Kar/Zarar: {topKarZarar.toFixed(0)}
           </div>
           <div>
-            TUFE Toplam Kar/Zarar:{" "}
+            TUFE Toplam Kar/Zarar:
             {tufeTopKarZarar.toFixed(0)}
           </div>
           <div>

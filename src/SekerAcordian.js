@@ -34,13 +34,13 @@ function SekerAcordian(props) {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>{`F/K ${
-            props.hisse[8]
+            props.hisse[7]
           } `}</Typography>
           <Typography>{`Hedef Fiyat ${
             props.hisse[3]
           }`}</Typography>
           <Typography>{`Kazandırma Potansiyeli ${
-            props.hisse[7]
+            props.hisse[6]
           }`}</Typography>
         </AccordionDetails>
       </Accordion>

@@ -18,7 +18,7 @@ import {
   get,
 } from "firebase/database";
 import { hisselerim, tufe, ufe } from "./srcHisse";
-import data from "./data.js";
+import { data } from "./data.js";
 
 class App extends Component {
   constructor(props) {
@@ -31,31 +31,34 @@ class App extends Component {
       cardData: "",
       firebase: [],
       formShow: false,
+      temettu: "",
     };
   }
   async componentDidMount() {
     //firebase Data
-    const firebase = await this.getFirebase(
-      FIREBASE,
-      "/burak/"
-    );
-    //sekerbank hisse yorumları api yok site html ini parse ediyorum
-    const sekerHisseler = await this.getFirebase(
-      FIREBASE,
-      "/Seker/"
-    );
+    // const firebase = await this.getFirebase(
+    //   FIREBASE,
+    //   "/burak/"
+    // );
+    // //sekerbank hisse yorumları api yok site html ini parse ediyorum
+    // const sekerHisseler = await this.getFirebase(
+    //   FIREBASE,
+    //   "/Seker/"
+    // );
 
-    const dataBase = await axios
-      .get("https://nameless-badlands-21842.herokuapp.com/")
-      .then(data => data.data);
+    // const dataBase = await axios
+    //   .get("https://nameless-badlands-21842.herokuapp.com/")
+    //   .then(data => data.data);
 
-    const borsa = dataBase.borsa.flat();
-    const isHisseler = dataBase.isHisseler;
+    // const borsa = dataBase.borsa.flat();
+    // const isHisseler = dataBase.isHisseler;
+    // const temettu = dataBase.temettu;
 
-    // const borsa = data.borsa.flat();
-    // const isHisseler = data.isHisseler;
-    // const sekerHisseler = data.sekerHisseler;
-    // const firebase = data.firebase;
+    const borsa = data.borsa.flat();
+    const isHisseler = data.isHisseler;
+    const sekerHisseler = data.sekerHisseler;
+    const firebase = data.firebase;
+    const temettu = data.temettu;
     const cardData = firebase.map(his => {
       const data = {
         isData: isHisseler.find(
@@ -68,6 +71,7 @@ class App extends Component {
           val => val.strKod === his.name
         ),
         mainHisse: his,
+        temettu: temettu.find(val => val.co === his.name),
       };
       return data;
     });
@@ -79,6 +83,7 @@ class App extends Component {
       borsa,
       firebase: firebase || hisselerim,
       cardData,
+      temettu,
     });
   }
 

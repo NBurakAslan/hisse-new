@@ -21,6 +21,7 @@ class HisseCard extends Component {
         sekerData = "",
         borsaData = "",
         mainHisse = "",
+        temettu = "",
       } = this.data;
       const miktar = mainHisse.order.reduce(
         (miktar, adet) => miktar + adet.buy - adet.sell,
@@ -125,6 +126,10 @@ class HisseCard extends Component {
           <div>
             Yabancı Oranı:
             {Number(isData.YABANCI_ORAN).toFixed(2)}
+          </div>
+          <div>Birim Temettü:{temettu.dhtl}</div>
+          <div>
+            Toplam Temettü Getiri:{temettu.dhtl * miktar}
           </div>
           <div>
             <h3>Analiz ve Öneri</h3>
