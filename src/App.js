@@ -59,25 +59,19 @@ class App extends Component {
     const sekerHisseler = data.sekerHisseler;
     const firebase = data.firebase;
     const temettu = data.temettu;
-    const cardData = firebase.map(his => {
+    const cardData = firebase.map((his) => {
       const data = {
-        isData: isHisseler.find(
-          val => val.Title === his.name
-        ),
-        sekerData: sekerHisseler.find(
-          val => val[0] === his.name
-        ),
-        borsaData: borsa.find(
-          val => val.strKod === his.name
-        ),
+        isData: isHisseler.find((val) => val.Title === his.name),
+        sekerData: sekerHisseler.find((val) => val[0] === his.name),
+        borsaData: borsa.find((val) => val.strKod === his.name),
         mainHisse: his,
-        temettu: temettu.find(val => val.co === his.name),
+        temettu: temettu.find((val) => val.co === his.name),
       };
       return data;
     });
 
     this.setState({
-      tumHisse: isHisseler.map(val => val.Title),
+      tumHisse: isHisseler.map((val) => val.Title),
       isHisseler,
       sekerHisseler,
       borsa,
@@ -95,8 +89,8 @@ class App extends Component {
     const app = initializeApp(url);
     const database = getDatabase(app);
     const dbref = ref(database);
-    const data = await get(child(dbref, refer)).then(
-      snapshot => snapshot.val()
+    const data = await get(child(dbref, refer)).then((snapshot) =>
+      snapshot.val()
     );
 
     return data;
@@ -106,8 +100,8 @@ class App extends Component {
   // getpage, tableToJson ve stripHtml ile html deki tabloyu parse ediyorum
 
   //yardımcı fonksiyon
-  copyhisseler = arr => {
-    const newhisseler = arr.map(hisse => {
+  copyhisseler = (arr) => {
+    const newhisseler = arr.map((hisse) => {
       return {
         name: hisse.name,
         order: [...hisse.order],
@@ -118,25 +112,18 @@ class App extends Component {
 
   //yeni hisse yada order ekle
 
-  saveHisse = async newHisseObj => {
-    if (
-      this.state.firebase.some(
-        his => his.name === newHisseObj.name
-      )
-    ) {
+  saveHisse = async (newHisseObj) => {
+    if (this.state.firebase.some((his) => his.name === newHisseObj.name)) {
       //eğer hisse daha önce aldığım bir hisse ise
 
       const degismeyenHisseler = this.state.firebase.filter(
-        hisse => hisse.name !== newHisseObj.name
+        (hisse) => hisse.name !== newHisseObj.name
       );
       const yeniHisse = this.state.firebase.find(
-        his => his.name === newHisseObj.name
+        (his) => his.name === newHisseObj.name
       );
 
-      yeniHisse.order = [
-        ...yeniHisse.order,
-        newHisseObj.order[0],
-      ];
+      yeniHisse.order = [...yeniHisse.order, newHisseObj.order[0]];
 
       if (
         this.firebaseSave([
@@ -163,10 +150,7 @@ class App extends Component {
       ) {
         this.setState(
           {
-            firebase: [
-              ...this.copyhisseler(this.state.firebase),
-              newHisseObj,
-            ],
+            firebase: [...this.copyhisseler(this.state.firebase), newHisseObj],
             formShow: false,
           },
           this.syncLocalStorage
@@ -175,7 +159,7 @@ class App extends Component {
     }
   };
 
-  firebaseSave = async obj => {
+  firebaseSave = async (obj) => {
     let error = true;
     try {
       const app = initializeApp(FIREBASE);
@@ -192,26 +176,38 @@ class App extends Component {
 
   //hisse sil
 
-  findCardHisse = name => {
+  findCardHisse = (name) => {
     if (this.state.cardData) {
-      return this.state.cardData.find(
-        his => his.borsaData.strKod === name
-      );
+      return this.state.cardData.find((his) => his.borsaData.strKod === name);
     }
   };
 
   syncLocalStorage = () => {
-    window.localStorage.setItem(
-      "burakData",
-      JSON.stringify(this.state)
-    );
+    window.localStorage.setItem("burakData", JSON.stringify(this.state));
+  };
+
+  topTutar = () => {
+    return this.state.firebase.reduce((tutar, his) => {
+      return (
+        Number(tutar) +
+        Number(
+          his.order.reduce((tutar2, emir) => {
+            return (
+              Number(tutar2) +
+              Number(emir.comision) +
+              Number(emir.buy === 0 ? -emir.total : emir.total)
+            );
+          }, 0)
+        )
+      );
+    }, 0);
   };
 
   render() {
     return (
       <Routes>
         <Route
-          path='/'
+          path="/"
           element={
             <HisseMain
               {...this.state}
@@ -222,14 +218,14 @@ class App extends Component {
             />
           }
         />
+        <Route path="/oneri" element={<OneriList {...this.state} />} />
         <Route
-          path='/oneri'
-          element={<OneriList {...this.state} />}
-        />
-        <Route
-          path='/hisse/:id'
+          path="/hisse/:id"
           element={
-            <HisseCard findCardHisse={this.findCardHisse} />
+            <HisseCard
+              findCardHisse={this.findCardHisse}
+              topTutar={this.topTutar}
+            />
           }
         />
       </Routes>
