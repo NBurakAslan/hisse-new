@@ -7,8 +7,8 @@ import "./HisseMiniCard.css";
 import { tufeHesap, overallCalcu } from "./helper.js";
 import { tufe, ufe } from "./srcHisse";
 class HisseMain extends Component {
-  copyfirebase = (arr) => {
-    const newfirebase = arr.map((hisse) => {
+  copyfirebase = arr => {
+    const newfirebase = arr.map(hisse => {
       return {
         name: hisse.name,
         order: [...hisse.order],
@@ -21,7 +21,7 @@ class HisseMain extends Component {
     this.props.toogleForm();
   };
 
-  goToHisse = (name) => {
+  goToHisse = name => {
     // this.props.findHisse(this.props.firebase.find((his) => his.name === name));
 
     this.props.history({ pathname: `/hisse/${name}` });
@@ -41,43 +41,63 @@ class HisseMain extends Component {
     let toplamTufeOdeme = 0;
     let tufeTopKarZarar = 0;
     let topTemettu = 0;
-    const hisseDetay = firebase.map((hisse) => {
+    const hisseDetay = firebase.map(hisse => {
       const miktar = hisse.order.reduce(
         (miktar, adet) => miktar + adet.buy - adet.sell,
         0
       );
 
-      const hisTemettuData = temettu.find((his) => his.co === hisse.name);
+      const hisTemettuData = temettu.find(
+        his => his.co === hisse.name
+      );
 
       const hisseTemettuTutar = hisTemettuData
         ? miktar * hisTemettuData.dhtl
         : 0;
 
-      const tufeTutar = hisse.order.reduce((toplam, emir) => {
-        const tufeAy = tufeHesap(emir.date, tufe);
+      const tufeTutar = hisse.order.reduce(
+        (toplam, emir) => {
+          const tufeAy = tufeHesap(emir.date, tufe);
 
-        return (
-          toplam +
-          (emir.buy === 0 ? -emir.total * tufeAy : emir.total * tufeAy) +
-          emir.comision * tufeAy
-        );
-      }, 0);
+          return (
+            toplam +
+            (emir.buy === 0
+              ? -emir.total * tufeAy
+              : emir.total * tufeAy) +
+            emir.comision * tufeAy
+          );
+        },
+        0
+      );
 
       const tutar = hisse.order.reduce((toplam, emir) => {
         return (
-          toplam + (emir.buy === 0 ? -emir.total : emir.total) + emir.comision
+          toplam +
+          (emir.buy === 0 ? -emir.total : emir.total) +
+          emir.comision
         );
       }, 0);
 
-      const ortalama = miktar === 0 ? 0 : (tutar / miktar).toFixed(2);
-      const borsa = this.props.borsa.find((his) => his.strKod === hisse.name);
+      const ortalama =
+        miktar === 0 ? 0 : (tutar / miktar).toFixed(2);
+      const borsa = this.props.borsa.find(
+        his => his.strKod === hisse.name
+      );
       let karZarar = 0;
       let eder = 0;
       let tufeKarZarar = 0;
       if (borsa) {
         eder = overallCalcu(miktar, borsa.dblSon);
-        karZarar = overallCalcu(miktar, borsa.dblSon, tutar);
-        tufeKarZarar = overallCalcu(miktar, borsa.dblSon, tufeTutar);
+        karZarar = overallCalcu(
+          miktar,
+          borsa.dblSon,
+          tutar
+        );
+        tufeKarZarar = overallCalcu(
+          miktar,
+          borsa.dblSon,
+          tufeTutar
+        );
       }
 
       toplamOdeme += tutar;
@@ -108,32 +128,45 @@ class HisseMain extends Component {
         <Navbar />
         <div>
           <h1>HİSSELERİM</h1>
-          <button onClick={this.toogleFormHandle}>Kaydet</button>
-          <button onClick={this.handleBrowserSave}>Browser</button>
+          <button onClick={this.toogleFormHandle}>
+            Kaydet
+          </button>
+          <button onClick={this.handleBrowserSave}>
+            Browser
+          </button>
         </div>
 
         {hisseDetay}
         <div>
           <h2>Özet</h2>
           <div>Toplam Ödeme: {toplamOdeme.toFixed(0)}</div>
-          <div>TUFE Toplam Ödeme: {toplamTufeOdeme.toFixed(0)}</div>
-          <div>Toplam Varlık: {toplamVarlik.toFixed(0)}</div>
+          <div>
+            TUFE Toplam Ödeme: {toplamTufeOdeme.toFixed(0)}
+          </div>
+          <div>
+            Toplam Varlık: {toplamVarlik.toFixed(0)}
+          </div>
           <div>Toplam Temettü: {topTemettu.toFixed(0)}</div>
-          <div>Toplam Kar/Zarar: {topKarZarar.toFixed(0)}</div>
+          <div>
+            Toplam Kar/Zarar: {topKarZarar.toFixed(0)}
+          </div>
           <div>
             TUFE Toplam Kar/Zarar:
             {tufeTopKarZarar.toFixed(0)}
           </div>
           <div>
             Kar/Zarar Oran:
-            {((topKarZarar.toFixed(0) / toplamOdeme.toFixed(0)) * 100).toFixed(
-              2
-            )}
+            {(
+              (topKarZarar.toFixed(0) /
+                toplamOdeme.toFixed(0)) *
+              100
+            ).toFixed(2)}
           </div>
           <div>
             TUFE Kar/Zarar Oran:
             {(
-              (tufeTopKarZarar.toFixed(0) / toplamTufeOdeme.toFixed(0)) *
+              (tufeTopKarZarar.toFixed(0) /
+                toplamTufeOdeme.toFixed(0)) *
               100
             ).toFixed(2)}
           </div>
