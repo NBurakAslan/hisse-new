@@ -139,9 +139,9 @@ class App extends Component {
       ];
 
       if (
-        this.firebaseSave([
-          ...this.copyhisseler(this.state.firebase),
-          newHisseObj,
+        await this.firebaseSave([
+          ...degismeyenHisseler,
+          yeniHisse,
         ])
       ) {
         this.setState(
@@ -150,6 +150,10 @@ class App extends Component {
             formShow: false,
           },
           this.syncLocalStorage
+        );
+      } else {
+        alert(
+          "database değiştirilemedi sonra tekrar deneyin"
         );
       }
     } else {
@@ -171,8 +175,67 @@ class App extends Component {
           },
           this.syncLocalStorage
         );
+      } else {
+        alert(
+          "database değiştirilemedi sonra tekrar deneyin"
+        );
       }
     }
+  };
+
+  //hisse sil
+
+  removeHisse = async name => {
+    const degismeyenHisseler = this.state.firebase.filter(
+      hisse => hisse.name !== name
+    );
+
+    if (
+      await this.firebaseSave([
+        ...this.copyhisseler(degismeyenHisseler),
+      ])
+    ) {
+      this.setState({
+        firebase: [...degismeyenHisseler],
+        formShow: false,
+      });
+    } else {
+      alert(
+        "database değiştirilemedi sonra tekrar deneyin"
+      );
+    }
+  };
+
+  //Order Sil
+  orderSil = async (name, epoch) => {
+    //eğer hisse daha önce aldığım bir hisse ise
+
+    const degismeyenHisseler = this.state.firebase.filter(
+      hisse => hisse.name !== name
+    );
+    const yeniHisse = this.state.firebase.find(
+      his => his.name === name
+    );
+
+    const yeniHisseOrder = yeniHisse.order.filter(
+      ord => ord.date !== epoch
+    );
+
+    yeniHisse.order = [...yeniHisseOrder];
+
+    if (
+      await this.firebaseSave([
+        ...degismeyenHisseler,
+        yeniHisse,
+      ])
+    )
+      this.setState(
+        {
+          firebase: [...degismeyenHisseler, yeniHisse],
+          formShow: false,
+        },
+        this.syncLocalStorage
+      );
   };
 
   firebaseSave = async obj => {
@@ -187,10 +250,6 @@ class App extends Component {
     }
     return error;
   };
-
-  //Order Sil
-
-  //hisse sil
 
   findCardHisse = name => {
     if (this.state.cardData) {
@@ -238,6 +297,7 @@ class App extends Component {
               saveHisse={this.saveHisse}
               toogleForm={this.toogleForm}
               syncLocalStorage={this.syncLocalStorage}
+              removeHisse={this.removeHisse}
             />
           }
         />
@@ -251,6 +311,7 @@ class App extends Component {
             <HisseCard
               findCardHisse={this.findCardHisse}
               topTutar={this.topTutar}
+              orderSil={this.orderSil}
             />
           }
         />
