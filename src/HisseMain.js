@@ -31,6 +31,12 @@ class HisseMain extends Component {
     this.props.syncLocalStorage();
   };
 
+  sektorFind = (arr) => {
+    const sektor = arr.map((his) =>
+      his.find((his) => his.name === this.props.isHisseler.title)
+    );
+  };
+
   render() {
     const { firebase, temettu } = this.props;
 

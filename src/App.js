@@ -126,7 +126,7 @@ class App extends Component {
       yeniHisse.order = [...yeniHisse.order, newHisseObj.order[0]];
 
       if (
-        this.firebaseSave([
+        await this.firebaseSave([
           ...this.copyhisseler(this.state.firebase),
           newHisseObj,
         ])
@@ -138,6 +138,8 @@ class App extends Component {
           },
           this.syncLocalStorage
         );
+      } else {
+        alert("database değiştirilemedi sonra tekrar deneyin");
       }
     } else {
       //eğer hisse ilk defa aldığım bir hisse ise
@@ -155,7 +157,26 @@ class App extends Component {
           },
           this.syncLocalStorage
         );
+      } else {
+        alert("database değiştirilemedi sonra tekrar deneyin");
       }
+    }
+  };
+
+  //hisse sil
+
+  removeHisse = async (newHisseObj) => {
+    const degismeyenHisseler = this.state.firebase.filter(
+      (hisse) => hisse.name !== newHisseObj.name
+    );
+
+    if (await this.firebaseSave([...this.copyhisseler(degismeyenHisseler)])) {
+      this.setState({
+        firebase: [...degismeyenHisseler],
+        formShow: false,
+      });
+    } else {
+      alert("database değiştirilemedi sonra tekrar deneyin");
     }
   };
 
@@ -173,8 +194,6 @@ class App extends Component {
   };
 
   //Order Sil
-
-  //hisse sil
 
   findCardHisse = (name) => {
     if (this.state.cardData) {
