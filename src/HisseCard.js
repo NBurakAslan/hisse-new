@@ -5,9 +5,13 @@ import {
   tufeHesap,
   tarihceStr,
   overallCalcu,
+  tarihFormatter,
 } from "./helper.js";
 import { tufe, ufe } from "./srcHisse";
 import MainAcordion from "./MainAcordion";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import "./HisseCards.css";
 
 class HisseCard extends Component {
   get data() {
@@ -31,38 +35,31 @@ class HisseCard extends Component {
       );
       const tutar = mainHisse.order.reduce(
         (toplam, emir) =>
+          toplam + (emir.buy === 0 ? -emir.total : emir.total) + emir.comision,
+        0
+      );
+      const tutarTufe = mainHisse.order.reduce((toplam, emir) => {
+        const tufeAy = tufeHesap(emir.date, tufe);
+
+        return (
           toplam +
-          (emir.buy === 0 ? -emir.total : emir.total) +
-          emir.comision,
-        0
-      );
-      const tutarTufe = mainHisse.order.reduce(
-        (toplam, emir) => {
-          const tufeAy = tufeHesap(emir.date, tufe);
+          (emir.buy === 0 ? -emir.total * tufeAy : emir.total * tufeAy) +
+          emir.comision * tufeAy
+        );
+      }, 0);
 
-          return (
-            toplam +
-            (emir.buy === 0
-              ? -emir.total * tufeAy
-              : emir.total * tufeAy) +
-            emir.comision * tufeAy
-          );
-        },
-        0
-      );
-
-      const tarihce = mainHisse.order.map(ord => (
+      const tarihce = mainHisse.order.map((ord) => (
         <li>
-          <button
+          <IconButton
+            aria-label="delete"
+            disabled
+            color="primary"
             onClick={async () =>
-              await this.props.orderSil(
-                mainHisse.name,
-                ord.date
-              )
+              await this.props.orderSil(mainHisse.name, ord.date)
             }
           >
-            Tarihçe Sil
-          </button>
+            <DeleteIcon />
+          </IconButton>
           {tarihceStr(
             ord.date,
             ord.buy,
@@ -77,80 +74,63 @@ class HisseCard extends Component {
       return (
         <Sablon>
           <h1>Hisse Adı:{mainHisse.name}</h1>
-          <div>Sektör:{isData.AS_ALT_SEKTOR_TANIMI}</div>
-          <div>Son Birim Fiyat:{borsaData.dblSon}</div>
-          <div>
-            Ortalamam:
-            {miktar === 0 ? 0 : (tutar / miktar).toFixed(2)}
-          </div>
-          <div>
-            Tufeye Göre Ortalamam:
-            {miktar === 0
-              ? 0
-              : (tutarTufe / miktar).toFixed(2)}
-          </div>
-          <div>Elimdeki Adet:{miktar.toFixed(2)}</div>
-          <div>
-            Şu Anki Ederi:
-            {overallCalcu(miktar, borsaData.dblSon)}
-          </div>
-          <div>Ödenen Para:{tutar.toFixed(2)}</div>
-          <div>
-            TUFE ye göre Ödenen Para:{tutarTufe.toFixed(2)}
+          <div className="detay">
+            <div>Sektör:{isData.AS_ALT_SEKTOR_TANIMI}</div>
+            <div>Son Birim Fiyat:{borsaData.dblSon}</div>
+            <div>
+              Ortalamam:
+              {miktar === 0 ? 0 : (tutar / miktar).toFixed(2)}
+            </div>
+            <div>
+              Tufeye Göre Ortalamam:
+              {miktar === 0 ? 0 : (tutarTufe / miktar).toFixed(2)}
+            </div>
+            <div>Elimdeki Adet:{miktar.toFixed(2)}</div>
+            <div>
+              Şu Anki Ederi:
+              {overallCalcu(miktar, borsaData.dblSon)}
+            </div>
+            <div>Ödenen Para:{tutar.toFixed(2)}</div>
+            <div>TUFE ye göre Ödenen Para:{tutarTufe.toFixed(2)}</div>
+            <div>F/K:{isData.CARI_FK}</div>
+            <div>PD/DD:{isData.CARI_PD_DD}</div>
+            <div>FD/FAVÖK:{isData.FD_FAVOK}</div>
+            <div>Maliyet/Hisse:{(tutar / miktar).toFixed(2)}</div>
+            <div>
+              Kar/Zarar:
+              {overallCalcu(miktar, borsaData.dblSon, tutar)}
+            </div>
+            <div>
+              Kar/Zarar Oran:
+              {overallCalcu(miktar, borsaData.dblSon, tutar, true)}
+            </div>
+            <div>
+              TUFE Kar/Zarar:
+              {overallCalcu(miktar, borsaData.dblSon, tutarTufe)}
+            </div>
+            <div>
+              TUFE Kar/Zarar Oran:
+              {overallCalcu(miktar, borsaData.dblSon, tutarTufe, true)}
+            </div>
+            <div>
+              Yabancı Oranı:
+              {Number(isData.YABANCI_ORAN).toFixed(2)}
+            </div>
+            <div>Birim Temettü:{temettu.dhtl}</div>
+            <div>
+              Toplam Temettü Getiri:
+              {(temettu.dhtl * miktar).toFixed(2)}
+            </div>
+            <div>
+              Temettü Tarihi:
+              {tarihFormatter(temettu.rd)}
+            </div>
+            <div>
+              Hisse Portföy Oranı:
+              {`${((tutar / this.props.topTutar()) * 100).toFixed(2)}%`}
+            </div>
           </div>
 
-          <div>F/K:{isData.CARI_FK}</div>
-          <div>PD/DD:{isData.CARI_PD_DD}</div>
-          <div>FD/FAVÖK:{isData.FD_FAVOK}</div>
-          <div>
-            Maliyet/Hisse:{(tutar / miktar).toFixed(2)}
-          </div>
-          <div>
-            Kar/Zarar:
-            {overallCalcu(miktar, borsaData.dblSon, tutar)}
-          </div>
-          <div>
-            Kar/Zarar Oran:
-            {overallCalcu(
-              miktar,
-              borsaData.dblSon,
-              tutar,
-              true
-            )}
-          </div>
-          <div>
-            TUFE Kar/Zarar:
-            {overallCalcu(
-              miktar,
-              borsaData.dblSon,
-              tutarTufe
-            )}
-          </div>
-          <div>
-            TUFE Kar/Zarar Oran:
-            {overallCalcu(
-              miktar,
-              borsaData.dblSon,
-              tutarTufe,
-              true
-            )}
-          </div>
-          <div>
-            Yabancı Oranı:
-            {Number(isData.YABANCI_ORAN).toFixed(2)}
-          </div>
-          <div>Birim Temettü:{temettu.dhtl}</div>
-          <div>
-            Toplam Temettü Getiri:
-            {(temettu.dhtl * miktar).toFixed(2)}
-          </div>
-          <div>
-            Hisse Portföy Oranı:
-            {`${(
-              (tutar / this.props.topTutar()) *
-              100
-            ).toFixed(2)}%`}
-          </div>
           <div>
             <h3>Analiz ve Öneri</h3>
             <div>
