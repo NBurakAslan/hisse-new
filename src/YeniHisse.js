@@ -39,14 +39,14 @@ class YeniHisse extends Component {
       "string",
       value => typeof value === "string"
     );
-    ValidatorForm.addValidationRule(
-      "satis",
-      value => this.state.buy === 0
-    );
-    ValidatorForm.addValidationRule(
-      "alis",
-      value => this.state.sell === 0
-    );
+    // ValidatorForm.addValidationRule(
+    //   "satis",
+    //   value => this.state.buy === 0
+    // );
+    // ValidatorForm.addValidationRule(
+    //   "alis",
+    //   value => this.state.sell === 0
+    // );
   }
 
   handleChangeName = e => {
@@ -131,11 +131,10 @@ class YeniHisse extends Component {
                 onChange={this.handleChange}
                 fullWidth
                 margin='normal'
-                validators={["required", "number", "alis"]}
+                validators={["required", "number"]}
                 errorMessages={[
                   "Hisse Adeti girin",
                   "Sayı girilmesi lazım",
-                  "Satış 0 olmalı",
                 ]}
               />
 
@@ -147,11 +146,10 @@ class YeniHisse extends Component {
                 onChange={this.handleChange}
                 fullWidth
                 margin='normal'
-                validators={["required", "number", "satis"]}
+                validators={["required", "number"]}
                 errorMessages={[
                   "Hisse adedi girin",
                   "Sayı girilmesi lazım",
-                  "Alış 0 lira olmalıdır",
                 ]}
               />
               <TextValidator

@@ -35,27 +35,36 @@ class HisseCard extends Component {
       );
       const tutar = mainHisse.order.reduce(
         (toplam, emir) =>
-          toplam + (emir.buy === 0 ? -emir.total : emir.total) + emir.comision,
+          toplam +
+          (emir.buy === 0 ? -emir.total : emir.total) +
+          emir.comision,
         0
       );
-      const tutarTufe = mainHisse.order.reduce((toplam, emir) => {
-        const tufeAy = tufeHesap(emir.date, tufe);
+      const tutarTufe = mainHisse.order.reduce(
+        (toplam, emir) => {
+          const tufeAy = tufeHesap(emir.date, tufe);
 
-        return (
-          toplam +
-          (emir.buy === 0 ? -emir.total * tufeAy : emir.total * tufeAy) +
-          emir.comision * tufeAy
-        );
-      }, 0);
+          return (
+            toplam +
+            (emir.buy === 0
+              ? -emir.total * tufeAy
+              : emir.total * tufeAy) +
+            emir.comision * tufeAy
+          );
+        },
+        0
+      );
 
-      const tarihce = mainHisse.order.map((ord) => (
-        <li>
+      const tarihce = mainHisse.order.map((ord, i) => (
+        <li key={i}>
           <IconButton
-            aria-label="delete"
-            disabled
-            color="primary"
+            aria-label='delete'
+            color='primary'
             onClick={async () =>
-              await this.props.orderSil(mainHisse.name, ord.date)
+              await this.props.orderSil(
+                mainHisse.name,
+                ord.date
+              )
             }
           >
             <DeleteIcon />
@@ -74,16 +83,20 @@ class HisseCard extends Component {
       return (
         <Sablon>
           <h1>Hisse Adı:{mainHisse.name}</h1>
-          <div className="detay">
+          <div className='detay'>
             <div>Sektör:{isData.AS_ALT_SEKTOR_TANIMI}</div>
             <div>Son Birim Fiyat:{borsaData.dblSon}</div>
             <div>
               Ortalamam:
-              {miktar === 0 ? 0 : (tutar / miktar).toFixed(2)}
+              {miktar === 0
+                ? 0
+                : (tutar / miktar).toFixed(2)}
             </div>
             <div>
               Tufeye Göre Ortalamam:
-              {miktar === 0 ? 0 : (tutarTufe / miktar).toFixed(2)}
+              {miktar === 0
+                ? 0
+                : (tutarTufe / miktar).toFixed(2)}
             </div>
             <div>Elimdeki Adet:{miktar.toFixed(2)}</div>
             <div>
@@ -91,26 +104,49 @@ class HisseCard extends Component {
               {overallCalcu(miktar, borsaData.dblSon)}
             </div>
             <div>Ödenen Para:{tutar.toFixed(2)}</div>
-            <div>TUFE ye göre Ödenen Para:{tutarTufe.toFixed(2)}</div>
+            <div>
+              TUFE ye göre Ödenen Para:
+              {tutarTufe.toFixed(2)}
+            </div>
             <div>F/K:{isData.CARI_FK}</div>
             <div>PD/DD:{isData.CARI_PD_DD}</div>
             <div>FD/FAVÖK:{isData.FD_FAVOK}</div>
-            <div>Maliyet/Hisse:{(tutar / miktar).toFixed(2)}</div>
+            <div>
+              Maliyet/Hisse:{(tutar / miktar).toFixed(2)}
+            </div>
             <div>
               Kar/Zarar:
-              {overallCalcu(miktar, borsaData.dblSon, tutar)}
+              {overallCalcu(
+                miktar,
+                borsaData.dblSon,
+                tutar
+              )}
             </div>
             <div>
               Kar/Zarar Oran:
-              {overallCalcu(miktar, borsaData.dblSon, tutar, true)}
+              {overallCalcu(
+                miktar,
+                borsaData.dblSon,
+                tutar,
+                true
+              )}
             </div>
             <div>
               TUFE Kar/Zarar:
-              {overallCalcu(miktar, borsaData.dblSon, tutarTufe)}
+              {overallCalcu(
+                miktar,
+                borsaData.dblSon,
+                tutarTufe
+              )}
             </div>
             <div>
               TUFE Kar/Zarar Oran:
-              {overallCalcu(miktar, borsaData.dblSon, tutarTufe, true)}
+              {overallCalcu(
+                miktar,
+                borsaData.dblSon,
+                tutarTufe,
+                true
+              )}
             </div>
             <div>
               Yabancı Oranı:
@@ -123,11 +159,14 @@ class HisseCard extends Component {
             </div>
             <div>
               Temettü Tarihi:
-              {tarihFormatter(temettu.rd)}
+              {temettu.d && tarihFormatter(temettu.d)}
             </div>
             <div>
               Hisse Portföy Oranı:
-              {`${((tutar / this.props.topTutar()) * 100).toFixed(2)}%`}
+              {`${(
+                (tutar / this.props.topTutar()) *
+                100
+              ).toFixed(2)}%`}
             </div>
           </div>
 
