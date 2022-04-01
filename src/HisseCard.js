@@ -20,8 +20,6 @@ class HisseCard extends Component {
 
   render() {
     if (this.data) {
-      console.log(this.props.topTutar());
-
       const {
         isData = "",
         sekerData = "",
@@ -48,11 +46,10 @@ class HisseCard extends Component {
         );
       }, 0);
 
-      const tarihce = mainHisse.order.map((ord) => (
-        <li>
+      const tarihce = mainHisse.order.map((ord, i) => (
+        <li key={i}>
           <IconButton
             aria-label="delete"
-            disabled
             color="primary"
             onClick={async () =>
               await this.props.orderSil(mainHisse.name, ord.date)
@@ -91,7 +88,10 @@ class HisseCard extends Component {
               {overallCalcu(miktar, borsaData.dblSon)}
             </div>
             <div>Ödenen Para:{tutar.toFixed(2)}</div>
-            <div>TUFE ye göre Ödenen Para:{tutarTufe.toFixed(2)}</div>
+            <div>
+              TUFE ye göre Ödenen Para:
+              {tutarTufe.toFixed(2)}
+            </div>
             <div>F/K:{isData.CARI_FK}</div>
             <div>PD/DD:{isData.CARI_PD_DD}</div>
             <div>FD/FAVÖK:{isData.FD_FAVOK}</div>

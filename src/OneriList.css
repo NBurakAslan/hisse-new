@@ -1,86 +1,55 @@
 .Sablon {
   margin: 4rem auto;
   padding: 2rem 3rem 3rem;
-  max-width: 800px;
+  max-width: 650px;
   background: #ff6666;
   color: #fff;
   box-shadow: -20px -20px 0px 0px rgba(100, 100, 100, 0.1);
   overflow: hidden;
 }
-.TodoList ul {
-  margin-top: 2.6rem;
-  list-style: none;
+/*
+      SPACING SYSTEM (px)
+      2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
+      FONT SIZE SYSTEM (px)
+      10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62 / 74 / 86 / 98
+      */
+/* 
+      MAIN COLOR: #087f5b
+      GREY COLOR: #343a40
+      */
+
+h1 {
+  font-size: 44px;
+  margin-bottom: 24px;
+  line-height: 1.1;
+  letter-spacing: -1px;
 }
 
-.TodoList h1 {
-  font-weight: normal;
-  font-size: 2.6rem;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-.TodoList h1 span {
-  display: block;
-  font-size: 0.8rem;
-  margin-bottom: 0.7rem;
-  margin-left: 3px;
-  margin-top: 0.2rem;
+li {
+  font-size: 18px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  text-align: left;
 }
 
-.todo-enter {
-  opacity: 0;
+h2 {
+  font-size: 30px;
+  margin-bottom: 8px;
+  margin-top: 12px;
+  line-height: 1.1;
+  letter-spacing: -1px;
 }
-.todo-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
+.Ozet {
+  margin-top: 24px;
+  font-size: 18px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  text-align: left;
+  border: 5px solid;
+  padding: 12px 12px;
+  width: 400px;
 }
-.todo-exit {
-  opacity: 1;
-}
-.todo-exit-active {
-  /* opacity: 0; */
-  opacity: 0;
-  transform: translateX(-100%);
-  transition: all 500ms ease-in-out;
-}
-
-.Todo .Todo-buttons i {
-  display: inline-block;
-}
-.form-enter {
-  transform: translateY(77px);
-  transition: all 500ms cubic-bezier(0.39, 0.575, 0.565, 1);
-  position: absolute;
-}
-.form-enter-active {
-  transform: translateY(0%);
-  transition: all 500ms cubic-bezier(0.39, 0.575, 0.565, 1);
-  position: absolute;
-}
-.form-exit {
-  transform: translateY(0%);
-  position: absolute;
-}
-.form-exit-active {
-  transform: translateY(77px);
-  transition: all 500ms cubic-bezier(0.39, 0.575, 0.565, 1);
-  position: absolute;
-}
-
-.task-text-enter {
-  transform: translateY(-77px);
-  position: absolute;
-}
-.task-text-enter-active {
-  transform: translateY(0);
-  transition: all 500ms cubic-bezier(0.39, 0.575, 0.565, 1);
-  position: absolute;
-}
-.task-text-exit {
-  transform: translateY(0);
-  position: absolute;
-}
-.task-text-exit-active {
-  transform: translateY(-77px);
-  position: absolute;
-  transition: all 500ms cubic-bezier(0.39, 0.575, 0.565, 1);
+.Ozet div {
+  display: flex;
+  justify-content: space-between;
 }

@@ -3,21 +3,13 @@ import { Route, Routes } from "react-router-dom";
 import OneriList from "./OneriList";
 import "./App.css";
 import HisseMain from "./HisseMain";
-import { FIREBASE } from "./Config";
+import { FIREBASE, BORSA } from "./Config";
 import axios from "axios";
 import HisseCard from "./HisseCard";
 import { withRouter } from "./WithRouter";
 import { initializeApp } from "firebase/app";
-import {
-  getDatabase,
-  ref,
-  set,
-  child,
-  update,
-  remove,
-  get,
-} from "firebase/database";
-import { hisselerim, tufe, ufe } from "./srcHisse";
+import { getDatabase, ref, set, child, get } from "firebase/database";
+import { tufe, ufe } from "./srcHisse";
 import { data } from "./data.js";
 
 class App extends Component {
@@ -47,7 +39,7 @@ class App extends Component {
     // );
 
     // const dataBase = await axios
-    //   .get("https://nameless-badlands-21842.herokuapp.com/")
+    //   .get(BORSA)
     //   .then(data => data.data);
 
     // const borsa = dataBase.borsa.flat();
@@ -75,7 +67,7 @@ class App extends Component {
       isHisseler,
       sekerHisseler,
       borsa,
-      firebase: firebase || hisselerim,
+      firebase: firebase,
       cardData,
       temettu,
     });
@@ -125,55 +117,23 @@ class App extends Component {
 
       yeniHisse.order = [...yeniHisse.order, newHisseObj.order[0]];
 
-      if (await this.firebaseSave([...degismeyenHisseler, yeniHisse])) {
-        this.setState(
-          {
-            firebase: [...degismeyenHisseler, yeniHisse],
-            formShow: false,
-          },
-          this.syncLocalStorage
-        );
-      } else {
-        alert("database değiştirilemedi sonra tekrar deneyin");
-      }
+      this.firebaseChangeSuccess(degismeyenHisseler, yeniHisse);
     } else {
       //eğer hisse ilk defa aldığım bir hisse ise
-
-      if (
-        await this.firebaseSave([
-          ...this.copyhisseler(this.state.firebase),
-          newHisseObj,
-        ])
-      ) {
-        this.setState(
-          {
-            firebase: [...this.copyhisseler(this.state.firebase), newHisseObj],
-            formShow: false,
-          },
-          this.syncLocalStorage
-        );
-      } else {
-        alert("database değiştirilemedi sonra tekrar deneyin");
-      }
+      this.firebaseChangeSuccess(
+        this.copyhisseler(this.state.firebase),
+        newHisseObj
+      );
     }
   };
 
   //hisse sil
 
-  removeHisse = async (event, name) => {
-    event.stopPropagation();
+  removeHisse = async (name) => {
     const degismeyenHisseler = this.state.firebase.filter(
       (hisse) => hisse.name !== name
     );
-
-    if (await this.firebaseSave([...this.copyhisseler(degismeyenHisseler)])) {
-      this.setState({
-        firebase: [...degismeyenHisseler],
-        formShow: false,
-      });
-    } else {
-      alert("database değiştirilemedi sonra tekrar deneyin");
-    }
+    this.firebaseChangeSuccess(degismeyenHisseler);
   };
 
   //Order Sil
@@ -188,15 +148,7 @@ class App extends Component {
     const yeniHisseOrder = yeniHisse.order.filter((ord) => ord.date !== epoch);
 
     yeniHisse.order = [...yeniHisseOrder];
-
-    if (await this.firebaseSave([...degismeyenHisseler, yeniHisse]))
-      this.setState(
-        {
-          firebase: [...degismeyenHisseler, yeniHisse],
-          formShow: false,
-        },
-        this.syncLocalStorage
-      );
+    this.firebaseChangeSuccess(degismeyenHisseler, yeniHisse);
   };
 
   firebaseSave = async (obj) => {
@@ -218,6 +170,24 @@ class App extends Component {
     }
   };
 
+  firebaseChangeSuccess = async (mainArr, newArr) => {
+    let arr = [];
+    if (newArr) {
+      arr = [...mainArr, newArr];
+    } else {
+      arr = mainArr;
+    }
+
+    (await this.firebaseSave(arr))
+      ? this.setState(
+          {
+            firebase: arr,
+            formShow: false,
+          },
+          this.syncLocalStorage
+        )
+      : alert("database değiştirilemedi sonra tekrar deneyin");
+  };
   syncLocalStorage = () => {
     window.localStorage.setItem("burakData", JSON.stringify(this.state));
   };

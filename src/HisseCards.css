@@ -3,8 +3,7 @@
   grid-template-columns: 350px 350px;
   grid-template-rows: 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px 30px;
 
-  font-size: 16px;
-  text-transform: capitalize;
-  text-align: left;
-  letter-spacing: 2px;
+  font-family: "Rubik", sans-serif;
+  line-height: 1;
+  font-weight: 400;
 }

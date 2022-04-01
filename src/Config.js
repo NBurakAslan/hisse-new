@@ -1,6 +1,6 @@
 export const ISBNKURL = `https://www.isyatirim.com.tr/_layouts/15/IsYatirim.Website/Common/Data.aspx/SirketBilgileriBySektor?sektor=`;
 
-export const BORSA = "https://api.genelpara.com/embed/borsa";
+export const BORSA = "https://nameless-badlands-21842.herokuapp.com/";
 
 export const denemeBorsa = "https://webapi.tmgrup.com.tr/Economy/GetBistShares";
 
