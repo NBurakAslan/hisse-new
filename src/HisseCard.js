@@ -123,7 +123,7 @@ class HisseCard extends Component {
             </div>
             <div>
               Temettü Tarihi:
-              {tarihFormatter(temettu.rd)}
+              {temettu.d ? tarihFormatter(temettu.d) : "Temettü Tarihi Yok"}
             </div>
             <div>
               Hisse Portföy Oranı:
