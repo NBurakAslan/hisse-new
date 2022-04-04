@@ -154,43 +154,37 @@ class App extends Component {
   firebaseSave = async (obj) => {
     let error = true;
     try {
-      const app = initializeApp(FIREBASE);
-      const database = getDatabase(app);
+      const app = initializeApp(FIREBASE); // Esseen ziki, niye her islemde tekrar initialize ve get database yapiyon ayi :D
+      const database = getDatabase(app); // Bu iki satir ve muhtemelen ref() ya didMount'da calismali ya da bi flag koyman lazim buraya daha once calistiysa bi daha calismamali bu satirlar
       await set(ref(database, "/burak/"), obj);
     } catch (err) {
       console.log(err);
-      error = false;
+      error = false; // Hata aldiginda erroru false set edip, error true ise hata yokmus gibi davranmak belki hic soruna yol acmiyor ama kodu okuyan adama beyin sarsintisi gecirtiyor :D
     }
     return error;
   };
 
-  findCardHisse = (name) => {
-    if (this.state.cardData) {
-      return this.state.cardData.find((his) => his.borsaData.strKod === name);
-    }
-  };
+  findCardHisse = (name) => this.state.cardData && this.state.cardData.find((his) => his.borsaData.strKod === name) // burda optional chaining kullanabilirsin babel ile plugin yuklersen direk this.state.cardData?.find(...) yapabilirsin
 
-  firebaseChangeSuccess = async (mainArr, newArr) => {
-    let arr = [];
-    if (newArr) {
-      arr = [...mainArr, newArr];
+  firebaseChangeSuccess = async (mainArr, newArr) => { // newArr array degil ki neden arraymis gibi isimlendirip kafa karistiriyon
+    let arr = newArr ? [...mainArr, newArr] : mainArr
+
+    if (await this.firebaseSave(arr)) { // condition ? do something : do something else seklinde yazim tek satir icin ideal (bi ust satirda kullandim) ama birden cok satira yayiliosa if kullansan daha rahat okunuyo
+      this.setState(
+        {
+          firebase: arr,
+          formShow: false,
+        },
+        this.syncLocalStorage
+      )
     } else {
-      arr = mainArr;
+      alert("database değiştirilemedi sonra tekrar deneyin")
     }
+  }
 
-    (await this.firebaseSave(arr))
-      ? this.setState(
-          {
-            firebase: arr,
-            formShow: false,
-          },
-          this.syncLocalStorage
-        )
-      : alert("database değiştirilemedi sonra tekrar deneyin");
-  };
   syncLocalStorage = () => {
-    window.localStorage.setItem("burakData", JSON.stringify(this.state));
-  };
+    window.localStorage.setItem("burakData", JSON.stringify(this.state)) // bunu niye yapiyon hic bi yerde okudugunu gormedim
+  }
 
   topTutar = () => {
     return this.state.firebase.reduce((tutar, his) => {
