@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import "./OneriList.css";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import MainAcordion from "./MainAcordion";
-import Navbar from "./Navbar.js";
-import Sablon from "./Sablon";
+import MainAcordion from "../Components/MainAcordion";
+import Navbar from "../Ui/Navbar.js";
+import Sablon from "../Ui/Sablon";
 
 class OneriList extends Component {
   render() {

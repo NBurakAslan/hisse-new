@@ -1,14 +1,14 @@
 import React, { Component } from "react";
-import Sablon from "./Sablon";
-import { withRouter } from "./WithRouter";
+import Sablon from "../Ui/Sablon";
+import { withRouter } from "../Helpers/WithRouter";
 import {
   tufeHesap,
   tarihceStr,
   overallCalcu,
   tarihFormatter,
-} from "./helper.js";
-import { tufe, ufe } from "./srcHisse";
-import MainAcordion from "./MainAcordion";
+} from "../Helpers/helper.js";
+import { tufe, ufe } from "../Helpers/srcHisse";
+import MainAcordion from "../Components/MainAcordion";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import "./HisseCards.css";

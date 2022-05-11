@@ -1,16 +1,19 @@
 import React, { Component } from "react";
 import { Route, Routes } from "react-router-dom";
-import OneriList from "./OneriList";
+import OneriList from "./Pages/OneriList";
 import "./App.css";
-import HisseMain from "./HisseMain";
-import { FIREBASE, BORSA } from "./Config";
+import HisseMain from "./Pages/HisseMain";
+import { FIREBASE, DATABASE } from "./Helpers/Config";
 import axios from "axios";
-import HisseCard from "./HisseCard";
-import { withRouter } from "./WithRouter";
+import HisseCard from "./Pages/HisseCard";
+import { withRouter } from "./Helpers/WithRouter";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, set, child, get } from "firebase/database";
-import { tufe, ufe } from "./srcHisse";
-import { data } from "./data.js";
+import { tufe, ufe } from "./Helpers/srcHisse";
+import { data } from "./Helpers/data.js";
+
+const app = initializeApp(FIREBASE);
+const database = getDatabase(app);
 
 class App extends Component {
   constructor(props) {
@@ -25,23 +28,15 @@ class App extends Component {
       formShow: false,
       temettu: "",
     };
+    this.app = initializeApp(FIREBASE);
+    this.database = getDatabase(app);
   }
   async componentDidMount() {
     //firebase Data
-    // const firebase = await this.getFirebase(
-    //   FIREBASE,
-    //   "/burak/"
-    // );
+    // const firebase = await this.getFirebase(FIREBASE, "/burak/");
     // //sekerbank hisse yorumları api yok site html ini parse ediyorum
-    // const sekerHisseler = await this.getFirebase(
-    //   FIREBASE,
-    //   "/Seker/"
-    // );
-
-    // const dataBase = await axios
-    //   .get(BORSA)
-    //   .then(data => data.data);
-
+    // const sekerHisseler = await this.getFirebase(FIREBASE, "/Seker/");
+    // const dataBase = await axios.get(DATABASE).then((data) => data.data);
     // const borsa = dataBase.borsa.flat();
     // const isHisseler = dataBase.isHisseler;
     // const temettu = dataBase.temettu;
@@ -152,41 +147,34 @@ class App extends Component {
   };
 
   firebaseSave = async (obj) => {
-    let error = true;
+    let setDataSuccess = true;
     try {
-      const app = initializeApp(FIREBASE);
-      const database = getDatabase(app);
-      await set(ref(database, "/burak/"), obj);
+      await set(ref(this.database, "/burak/"), obj);
     } catch (err) {
       console.log(err);
-      error = false;
+      setDataSuccess = false;
     }
-    return error;
+    return setDataSuccess;
   };
 
   findCardHisse = (name) => {
-    if (this.state.cardData) {
+    if (this.state.cardData)
       return this.state.cardData.find((his) => his.borsaData.strKod === name);
-    }
   };
 
-  firebaseChangeSuccess = async (mainArr, newArr) => {
+  firebaseChangeSuccess = async (mainArr, newHisse) => {
     let arr = [];
-    if (newArr) {
-      arr = [...mainArr, newArr];
-    } else {
-      arr = mainArr;
-    }
+    newHisse ? (arr = [...mainArr, newHisse]) : (arr = mainArr);
 
-    (await this.firebaseSave(arr))
-      ? this.setState(
-          {
-            firebase: arr,
-            formShow: false,
-          },
-          this.syncLocalStorage
-        )
-      : alert("database değiştirilemedi sonra tekrar deneyin");
+    if (await this.firebaseSave(arr))
+      this.setState(
+        {
+          firebase: arr,
+          formShow: false,
+        },
+        this.syncLocalStorage
+      );
+    else alert("database değiştirilemedi sonra tekrar deneyin");
   };
   syncLocalStorage = () => {
     window.localStorage.setItem("burakData", JSON.stringify(this.state));

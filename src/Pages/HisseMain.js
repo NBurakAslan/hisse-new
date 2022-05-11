@@ -1,20 +1,19 @@
 import React, { Component } from "react";
-import Navbar from "./Navbar";
-import Sablon from "./Sablon";
-import YeniHisse from "./YeniHisse";
-import { withRouter } from "./WithRouter";
+import Navbar from "../Ui/Navbar";
+import Sablon from "../Ui/Sablon";
+import YeniHisse from "../Components/YeniHisse";
+import { withRouter } from "../Helpers/WithRouter";
 import "./HisseMiniCard.css";
-import { tufeHesap, overallCalcu } from "./helper.js";
-import { tufe, ufe } from "./srcHisse";
+import { tufeHesap, overallCalcu } from "../Helpers/helper.js";
+import { tufe, ufe } from "../Helpers/srcHisse";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import { Button } from "@mui/material";
-import Link from "@mui/material/Link";
 import "./OneriList.css";
 
 class HisseMain extends Component {
-  copyfirebase = arr => {
-    const newfirebase = arr.map(hisse => {
+  copyfirebase = (arr) => {
+    const newfirebase = arr.map((hisse) => {
       return {
         name: hisse.name,
         order: [...hisse.order],
@@ -27,7 +26,7 @@ class HisseMain extends Component {
     this.props.toogleForm();
   };
 
-  goToHisse = name => {
+  goToHisse = (name) => {
     // this.props.findHisse(this.props.firebase.find((his) => his.name === name));
 
     this.props.history({ pathname: `/hisse/${name}` });
@@ -37,11 +36,9 @@ class HisseMain extends Component {
     this.props.syncLocalStorage();
   };
 
-  sektorFind = arr => {
-    const sektor = arr.map(his =>
-      his.find(
-        his => his.name === this.props.isHisseler.title
-      )
+  sektorFind = (arr) => {
+    const sektor = arr.map((his) =>
+      his.find((his) => his.name === this.props.isHisseler.title)
     );
   };
 
@@ -55,63 +52,43 @@ class HisseMain extends Component {
     let toplamTufeOdeme = 0;
     let tufeTopKarZarar = 0;
     let topTemettu = 0;
-    const hisseDetay = firebase.map(hisse => {
+    const hisseDetay = firebase.map((hisse) => {
       const miktar = hisse.order.reduce(
         (miktar, adet) => miktar + adet.buy - adet.sell,
         0
       );
 
-      const hisTemettuData = temettu.find(
-        his => his.co === hisse.name
-      );
+      const hisTemettuData = temettu.find((his) => his.co === hisse.name);
 
       const hisseTemettuTutar = hisTemettuData
         ? miktar * hisTemettuData.dhtl
         : 0;
 
-      const tufeTutar = hisse.order.reduce(
-        (toplam, emir) => {
-          const tufeAy = tufeHesap(emir.date, tufe);
+      const tufeTutar = hisse.order.reduce((toplam, emir) => {
+        const tufeAy = tufeHesap(emir.date, tufe);
 
-          return (
-            toplam +
-            (emir.buy === 0
-              ? -emir.total * tufeAy
-              : emir.total * tufeAy) +
-            emir.comision * tufeAy
-          );
-        },
-        0
-      );
-
-      const tutar = hisse.order.reduce((toplam, emir) => {
         return (
           toplam +
-          (emir.buy === 0 ? -emir.total : emir.total) +
-          emir.comision
+          (emir.buy === 0 ? -emir.total * tufeAy : emir.total * tufeAy) +
+          emir.comision * tufeAy
         );
       }, 0);
 
-      const ortalama =
-        miktar === 0 ? 0 : (tutar / miktar).toFixed(2);
-      const borsa = this.props.borsa.find(
-        his => his.strKod === hisse.name
-      );
+      const tutar = hisse.order.reduce((toplam, emir) => {
+        return (
+          toplam + (emir.buy === 0 ? -emir.total : emir.total) + emir.comision
+        );
+      }, 0);
+
+      const ortalama = miktar === 0 ? 0 : (tutar / miktar).toFixed(2);
+      const borsa = this.props.borsa.find((his) => his.strKod === hisse.name);
       let karZarar = 0;
       let eder = 0;
       let tufeKarZarar = 0;
       if (borsa) {
         eder = overallCalcu(miktar, borsa.dblSon);
-        karZarar = overallCalcu(
-          miktar,
-          borsa.dblSon,
-          tutar
-        );
-        tufeKarZarar = overallCalcu(
-          miktar,
-          borsa.dblSon,
-          tufeTutar
-        );
+        karZarar = overallCalcu(miktar, borsa.dblSon, tutar);
+        tufeKarZarar = overallCalcu(miktar, borsa.dblSon, tufeTutar);
       }
 
       toplamOdeme += tutar;
@@ -128,28 +105,20 @@ class HisseMain extends Component {
           key={hisse.name}
         >
           <IconButton
-            aria-label='delete'
-            color='primary'
-            onClick={() =>
-              this.props.removeHisse(hisse.name)
-            }
-            className='el--1'
+            aria-label="delete"
+            color="primary"
+            onClick={() => this.props.removeHisse(hisse.name)}
+            className="el--1"
           >
             <DeleteIcon />
           </IconButton>
 
-          <div className='el--2'>{`Hisse Adı:${
-            hisse.name
-          }`}</div>
-          <div className='el--3'>{`Miktar:${miktar}`}</div>
-          <div className='el--4'>{`Tutar:${tutar.toFixed(
-            0
-          )}`}</div>
-          <div className='el--5'>{`Anlık Fiyat:${
-            borsa.dblSon
-          }`}</div>
-          <div className='el--6'>{`Ortalama:${ortalama}`}</div>
-          <div className='el--7'>{`Kar/Zarar:${karZarar}`}</div>
+          <div className="el--2">{`Hisse Adı:${hisse.name}`}</div>
+          <div className="el--3">{`Miktar:${miktar}`}</div>
+          <div className="el--4">{`Tutar:${tutar.toFixed(0)}`}</div>
+          <div className="el--5">{`Anlık Fiyat:${borsa.dblSon}`}</div>
+          <div className="el--6">{`Ortalama:${ortalama}`}</div>
+          <div className="el--7">{`Kar/Zarar:${karZarar}`}</div>
         </li>
       );
     });
@@ -160,23 +129,20 @@ class HisseMain extends Component {
         <div>
           <h1>HİSSELERİM</h1>
           <Button
-            variant='contained'
-            color='primary'
+            variant="contained"
+            color="primary"
             onClick={this.toogleFormHandle}
           >
             Yeni Kayıt Ekle
           </Button>
 
-          <Button
-            variant='contained'
-            onClick={this.handleBrowserSave}
-          >
+          <Button variant="contained" onClick={this.handleBrowserSave}>
             Browser
           </Button>
         </div>
 
         {hisseDetay}
-        <div className='Ozet'>
+        <div className="Ozet">
           <h2>Özet</h2>
           <div>
             Toplam Ödeme:
@@ -191,12 +157,10 @@ class HisseMain extends Component {
             <span>{toplamVarlik.toFixed(0)}</span>
           </div>
           <div>
-            Toplam Temettü:{" "}
-            <span>{topTemettu.toFixed(0)}</span>
+            Toplam Temettü: <span>{topTemettu.toFixed(0)}</span>
           </div>
           <div>
-            Toplam Kar/Zarar:{" "}
-            <span>{topKarZarar.toFixed(0)}</span>
+            Toplam Kar/Zarar: <span>{topKarZarar.toFixed(0)}</span>
           </div>
           <div>
             TUFE Toplam Kar/Zarar:
@@ -206,8 +170,7 @@ class HisseMain extends Component {
             Kar/Zarar Oran:
             <span>
               {(
-                (topKarZarar.toFixed(0) /
-                  toplamOdeme.toFixed(0)) *
+                (topKarZarar.toFixed(0) / toplamOdeme.toFixed(0)) *
                 100
               ).toFixed(2)}
             </span>
@@ -217,8 +180,7 @@ class HisseMain extends Component {
             <span>
               {" "}
               {(
-                (tufeTopKarZarar.toFixed(0) /
-                  toplamTufeOdeme.toFixed(0)) *
+                (tufeTopKarZarar.toFixed(0) / toplamTufeOdeme.toFixed(0)) *
                 100
               ).toFixed(2)}
             </span>

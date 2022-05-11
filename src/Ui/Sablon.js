@@ -1,5 +1,5 @@
 import React from "react";
-import "./OneriList.css";
+import "../Pages/OneriList.css";
 
 const Sablon = ({ children }) => <div className="Sablon">{children}</div>;
 
